@@ -1,7 +1,7 @@
 // routes/customerTypeRoutes.js
 const express = require('express');
 const router  = express.Router();
-const ctrl    = require('../controllers/customerTypeController');
+const ctrl    = require('../controller/customerTypeController');
 
 router.get('/',        ctrl.getAll);    // GET    /api/customer-type
 router.get('/:id',     ctrl.getById);   // GET    /api/customer-type/:id

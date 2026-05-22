@@ -1,7 +1,7 @@
 // routes/customerRoutes.js
 const express = require('express');
 const router  = express.Router();
-const ctrl    = require('../controllers/customerController');
+const ctrl    = require('../controller/customerController');
 
 router.get('/search',  ctrl.search);    // GET    /api/customers/search?q=keyword  ← PHẢI trước /:id
 router.get('/',        ctrl.getAll);    // GET    /api/customers

@@ -36,13 +36,14 @@ const getById = async (req, res) => {
 // POST insert customer
 const create = async (req, res) => {
   try {
-    const { customer_name, email, phone, address, customer_type_id } = req.body;
-    if (!customer_name || !email)
-      return res.status(400).json({ success: false, message: 'customer_name and email are required' });
+    const { customer_name, full_name, email, phone, address, customer_type_id } = req.body;
+    const name = full_name || customer_name;
+    if (!name || !email)
+      return res.status(400).json({ success: false, message: 'full_name and email are required' });
 
     const [result] = await db.query(
-      'INSERT INTO customer (customer_name, email, phone, address, customer_type_id) VALUES (?, ?, ?, ?, ?)',
-      [customer_name, email, phone || null, address || null, customer_type_id || null]
+      'INSERT INTO customer (full_name, email, phone, address, customer_type_id) VALUES (?, ?, ?, ?, ?)',
+      [name, email, phone || null, address || null, customer_type_id || null]
     );
     res.status(201).json({ success: true, message: 'Created successfully', id: result.insertId });
   } catch (err) {
@@ -53,10 +54,11 @@ const create = async (req, res) => {
 // PUT update customer
 const update = async (req, res) => {
   try {
-    const { customer_name, email, phone, address, customer_type_id } = req.body;
+    const { customer_name, full_name, email, phone, address, customer_type_id } = req.body;
+    const name = full_name || customer_name;
     const [result] = await db.query(
-      'UPDATE customer SET customer_name=?, email=?, phone=?, address=?, customer_type_id=? WHERE id=?',
-      [customer_name, email, phone || null, address || null, customer_type_id || null, req.params.id]
+      'UPDATE customer SET full_name=?, email=?, phone=?, address=?, customer_type_id=? WHERE id=?',
+      [name, email, phone || null, address || null, customer_type_id || null, req.params.id]
     );
     if (result.affectedRows === 0)
       return res.status(404).json({ success: false, message: 'Customer not found' });
@@ -87,7 +89,7 @@ const search = async (req, res) => {
       SELECT c.*, ct.type_name
       FROM customer c
       LEFT JOIN customer_type ct ON c.customer_type_id = ct.id
-      WHERE c.customer_name LIKE ?
+      WHERE c.full_name LIKE ?
          OR c.email         LIKE ?
          OR ct.type_name    LIKE ?
       ORDER BY c.id ASC
